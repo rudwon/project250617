@@ -1,138 +1,7 @@
 import streamlit as st
 import random
 
-# --- 스타일 적용 (CSS) ---
-st.markdown(
-    """
-    <style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap');
-
-    body, .stApp {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        font-family: 'Poppins', sans-serif;
-        color: #fff;
-    }
-
-    .title {
-        font-size: 3.2rem;
-        font-weight: 700;
-        text-align: center;
-        margin: 30px 0 10px 0;
-        text-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
-    }
-
-    .subtitle {
-        font-size: 1.3rem;
-        text-align: center;
-        margin-bottom: 40px;
-        color: #d1c4e9;
-        font-weight: 500;
-        text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
-    }
-
-    .card {
-        background: rgba(255, 255, 255, 0.15);
-        border-radius: 25px;
-        padding: 30px 40px;
-        max-width: 650px;
-        margin: 0 auto 40px auto;
-        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.4);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-
-    .question {
-        font-size: 1.7rem;
-        font-weight: 700;
-        margin-bottom: 25px;
-        text-align: center;
-        letter-spacing: 1.5px;
-        text-shadow: 0 0 8px #ffd700;
-    }
-
-    input[type="text"] {
-        width: 100%;
-        max-width: 320px;
-        font-size: 1.2rem;
-        padding: 12px 15px;
-        border-radius: 12px;
-        border: none;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-        margin: 0 auto 25px auto;
-        display: block;
-        text-align: center;
-        font-weight: 600;
-        outline: none;
-    }
-
-    .btn-primary {
-        background: linear-gradient(45deg, #ffba00, #ff6a00);
-        border: none;
-        padding: 12px 35px;
-        font-size: 1.2rem;
-        font-weight: 700;
-        color: #fff;
-        border-radius: 30px;
-        cursor: pointer;
-        box-shadow: 0 5px 15px rgba(255, 105, 0, 0.6);
-        transition: all 0.3s ease;
-        display: block;
-        margin: 0 auto 15px auto;
-    }
-
-    .btn-primary:hover {
-        box-shadow: 0 0 20px #ffba00;
-        transform: scale(1.05);
-    }
-
-    .score {
-        font-size: 2.5rem;
-        font-weight: 900;
-        color: #ffd700;
-        text-align: center;
-        margin-bottom: 35px;
-        text-shadow: 0 0 12px #ffd700;
-    }
-
-    .message {
-        text-align: center;
-        font-size: 1.4rem;
-        margin-bottom: 20px;
-        font-weight: 600;
-        text-shadow: 0 0 6px rgba(255, 255, 255, 0.7);
-    }
-
-    .hint-box {
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 15px;
-        padding: 15px 20px;
-        max-width: 500px;
-        margin: 15px auto 30px auto;
-        font-style: italic;
-        font-size: 1.1rem;
-        color: #ffe066;
-        text-align: center;
-        box-shadow: 0 0 10px #ffb700;
-    }
-
-    .info-box {
-        max-width: 650px;
-        background: rgba(255, 255, 255, 0.12);
-        padding: 20px 30px;
-        margin: 0 auto 40px auto;
-        border-radius: 20px;
-        box-shadow: 0 4px 20px rgba(255, 255, 255, 0.15);
-        font-size: 1.1rem;
-        text-align: center;
-        font-weight: 600;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
-
-# 원소 데이터 (20개)
+# 원소 데이터 (기본 20개 정도만 예시)
 elements = [
     {"name": "수소", "symbol": "H", "atomic_number": 1},
     {"name": "헬륨", "symbol": "He", "atomic_number": 2},
@@ -158,51 +27,80 @@ elements = [
 
 st.set_page_config(page_title="주기율표 퀴즈 & 탐험", page_icon="🧪", layout="centered")
 
-st.markdown('<div class="title">🔬 주기율표 퀴즈 & 탐험</div>', unsafe_allow_html=True)
-st.markdown('<div class="subtitle">원소의 기호, 이름, 원자번호를 맞춰 보세요!</div>', unsafe_allow_html=True)
+st.title("🔬 주기율표 퀴즈 & 탐험")
 
-# 점수 관리
+# 점수 상태 관리
 if "score" not in st.session_state:
     st.session_state.score = 0
 
-# 문제 원소 관리
+# 문제 원소 상태 관리
 if "current_element" not in st.session_state:
     st.session_state.current_element = random.choice(elements)
 
-# 문제 유형 관리
+# 문제 유형 (기호, 이름, 원자번호 중 하나 선택)
 if "quiz_type" not in st.session_state:
     st.session_state.quiz_type = random.choice(["symbol", "name", "atomic_number"])
-
-# 사용자 답 입력 상태
-if "user_answer" not in st.session_state:
-    st.session_state.user_answer = ""
 
 def new_question():
     st.session_state.current_element = random.choice(elements)
     st.session_state.quiz_type = random.choice(["symbol", "name", "atomic_number"])
     st.session_state.user_answer = ""
-    st.session_state.feedback = None
-    st.experimental_rerun()
 
 def check_answer(user_answer):
     elem = st.session_state.current_element
+    correct = False
+    # 정답 확인
     if st.session_state.quiz_type == "symbol":
-        return user_answer.strip().capitalize() == elem["symbol"]
+        correct = user_answer.strip().capitalize() == elem["symbol"]
     elif st.session_state.quiz_type == "name":
-        return user_answer.strip() == elem["name"]
-    else:
-        return user_answer.strip() == str(elem["atomic_number"])
+        correct = user_answer.strip() == elem["name"]
+    else:  # atomic_number
+        correct = user_answer.strip() == str(elem["atomic_number"])
+    return correct
 
-# 점수판
-st.markdown(f'<div class="score">점수: {st.session_state.score}</div>', unsafe_allow_html=True)
+st.write(f"현재 점수: **{st.session_state.score}**")
 
-# 문제 문구
-q = ""
+# 문제 보여주기
+question = ""
 if st.session_state.quiz_type == "symbol":
-    q = f"원자번호가 **{st.session_state.current_element['atomic_number']}** 인 원소의 **기호**는?"
+    question = f"원자번호가 **{st.session_state.current_element['atomic_number']}** 인 원소의 **기호**는?"
 elif st.session_state.quiz_type == "name":
-    q = f"기호가 **{st.session_state.current_element['symbol']}** 인 원소의 **이름**은?"
+    question = f"기호가 **{st.session_state.current_element['symbol']}** 인 원소의 **이름**은?"
 else:
-    q = f"원소 **{st.session_state.current_element['name']}** 의 원자번호는?"
+    question = f"원소 **{st.session_state.current_element['name']}** 의 원자번호는?"
 
-st.markdown(f'<div class
+st.markdown(f"### {question}")
+
+# 사용자 답변 입력
+user_answer = st.text_input("정답을 입력하세요", key="user_answer")
+
+# 정답 확인 버튼
+if st.button("정답 확인"):
+    if check_answer(user_answer):
+        st.success("🎉 정답입니다!")
+        st.session_state.score += 1
+        st.button("다음 문제", on_click=new_question)
+    else:
+        st.error("❌ 틀렸어요. 다시 시도해 보세요.")
+        # 힌트 보여주기
+        hint = ""
+        elem = st.session_state.current_element
+        if st.session_state.quiz_type == "symbol":
+            hint = f"힌트: 원소 이름은 '{elem['name']}' 입니다."
+        elif st.session_state.quiz_type == "name":
+            hint = f"힌트: 원자번호는 {elem['atomic_number']} 입니다."
+        else:
+            hint = f"힌트: 원소 기호는 '{elem['symbol']}' 입니다."
+        st.info(hint)
+
+# 원소 간단 정보 카드
+st.markdown("---")
+st.markdown("### 현재 문제 원소 정보 (힌트 참고용)")
+st.write(f"- 이름: {st.session_state.current_element['name']}")
+st.write(f"- 기호: {st.session_state.current_element['symbol']}")
+st.write(f"- 원자번호: {st.session_state.current_element['atomic_number']}")
+
+# 다음 문제 버튼 (언제나 눌러서 넘어갈 수 있음)
+if st.button("다음 문제"):
+    new_question()
+    st.experimental_rerun()
